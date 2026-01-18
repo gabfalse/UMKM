@@ -6,14 +6,15 @@ const SHEET_URL =
 export default function App() {
   const [products, setProducts] = useState([]);
 
-  // Convert Google Drive link → direct image link
+  // ✅ Google Drive → PUBLIC IMAGE (AMAN UNTUK VERCEL)
   const convertDriveLink = (url) => {
     if (!url) return null;
 
     const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
     if (!match) return null;
 
-    return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+    // 🔥 FORMAT YANG AMAN
+    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
   };
 
   useEffect(() => {
@@ -24,7 +25,6 @@ export default function App() {
 
         const data = rows
           .map((row) => {
-            // LIMIT split → cegah rusak karena koma di deskripsi
             const parts = row.split(",");
             if (parts.length < 5) return null;
 
@@ -75,6 +75,7 @@ export default function App() {
                   src={imageUrl}
                   alt={p.name}
                   className="h-44 w-full object-cover"
+                  loading="lazy"
                 />
               )}
 
