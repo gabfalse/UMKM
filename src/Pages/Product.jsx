@@ -57,7 +57,9 @@ export default function Product() {
 
                   {p.wa && (
                     <a
-                      href={`https://wa.me/${p.wa}?text=Halo%20saya%20mau%20pesan%20${p.name}`}
+                      href={`https://wa.me/${p.wa}?text=${encodeURIComponent(
+                        `Halo saya mau pesan kerudung dengan code warna ${p.name} yang harganya ${p.price}`,
+                      )}`}
                       target="_blank"
                       rel="noreferrer"
                       className="rounded-full px-4 py-1.5 text-xs font-medium text-white transition bg-add"

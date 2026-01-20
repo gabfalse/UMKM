@@ -13,7 +13,12 @@ export default function Home({ profile }) {
             <img
               src={profile.logo}
               alt={profile.name}
-              className="h-20 w-20 rounded-full mx-auto mb-6 object-cover shadow-sm"
+              loading="eager"
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                e.currentTarget.src = "https://placehold.co/160x160?text=Logo";
+              }}
+              className="h-24 w-24 rounded-full mx-auto mb-6 object-contain bg-white p-2 shadow-md"
             />
           )}
 
@@ -105,7 +110,9 @@ export default function Home({ profile }) {
 
                     {p.wa && (
                       <a
-                        href={`https://wa.me/${p.wa}?text=Halo%20saya%20mau%20pesan%20${p.name}`}
+                        href={`https://wa.me/${p.wa}?text=${encodeURIComponent(
+                          `Halo saya mau pesan kerudung dengan code warna ${p.name} yanf harganya ${p.price}`,
+                        )}`}
                         target="_blank"
                         rel="noreferrer"
                         className="rounded-full px-4 py-1.5 text-xs font-medium text-white transition bg-add"

@@ -53,7 +53,7 @@ export const convertDriveLink = (url) => {
 };
 
 /* =======================
-   PROFILE HOOK
+   PROFILE HOOK (UPDATED)
 ======================= */
 export const useProfile = () => {
   const [profile, setProfile] = useState(null);
@@ -72,14 +72,19 @@ export const useProfile = () => {
           description: headers.indexOf("description"),
           phone: headers.indexOf("phone"),
           status: headers.indexOf("status"),
+          brand_color: headers.indexOf("brand_color"),
         };
 
         setProfile({
-          name: values[idx.name],
+          name: values[idx.name] || "",
           logo: convertDriveLink(values[idx.logo]),
-          description: values[idx.description],
-          phone: values[idx.phone],
-          status: values[idx.status],
+          description: values[idx.description] || "",
+          phone: values[idx.phone] || "",
+          status: values[idx.status] || "0",
+          brandColor:
+            values[idx.brand_color] && values[idx.brand_color].startsWith("#")
+              ? values[idx.brand_color]
+              : "#111827", // default aman
         });
       })
       .finally(() => setLoading(false));
