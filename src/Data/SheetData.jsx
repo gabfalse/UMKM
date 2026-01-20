@@ -7,7 +7,7 @@ const PROFILE_SHEET_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0FFmLHlOlJdTBESjVj1qHzt3qRDlpJ4j8EI04ut5Nts_-jqH_mtED9ywljoS97Az-RVRDx3DZt5uE/pub?gid=499327753&single=true&output=csv";
 
 const PRODUCTS_SHEET_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0FFmLHlOlJdTBESjVj1qHzt3qRDlpJ4j8EI04ut5Nts_-jqH_mtED9ywljoS97Az-RVRDx3DZt5uE/pub?gid=0&single=true&output=csv";
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0FFmLHlOlJdTBESjVj1qHzt3qRDlpJ4j8EI04ut5Nts_-jqH_mtED9ywljoS97Az-RVRDx3DZt5uE/pub?gid=114472509&single=true&output=csv";
 
 /* =======================
    HELPER
@@ -18,9 +18,36 @@ const fetchCSV = async (url) => {
   return res.text();
 };
 
+/* CSV SAFE PARSER */
+const parseCSVRow = (row) => {
+  const result = [];
+  let current = "";
+  let insideQuotes = false;
+
+  for (let i = 0; i < row.length; i++) {
+    const char = row[i];
+
+    if (char === '"' && row[i + 1] === '"') {
+      current += '"';
+      i++;
+    } else if (char === '"') {
+      insideQuotes = !insideQuotes;
+    } else if (char === "," && !insideQuotes) {
+      result.push(current.trim());
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+
+  result.push(current.trim());
+  return result;
+};
+
 export const convertDriveLink = (url) => {
   if (!url) return null;
-  const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  const clean = url.trim().replace(/"/g, "");
+  const match = clean.match(/\/d\/([a-zA-Z0-9_-]+)/);
   if (!match) return null;
   return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
 };
@@ -36,16 +63,23 @@ export const useProfile = () => {
     fetchCSV(PROFILE_SHEET_URL)
       .then((csv) => {
         const rows = csv.trim().split("\n");
-        const row = rows[1]?.split(",");
+        const headers = parseCSVRow(rows[0]);
+        const values = parseCSVRow(rows[1] || "");
 
-        if (!row) return;
+        const idx = {
+          name: headers.indexOf("name"),
+          logo: headers.indexOf("logo"),
+          description: headers.indexOf("description"),
+          phone: headers.indexOf("phone"),
+          status: headers.indexOf("status"),
+        };
 
         setProfile({
-          name: row[0],
-          logo: convertDriveLink(row[1]),
-          description: row[2],
-          phone: row[3],
-          status: row[4], // 0 aktif | 1 maintenance
+          name: values[idx.name],
+          logo: convertDriveLink(values[idx.logo]),
+          description: values[idx.description],
+          phone: values[idx.phone],
+          status: values[idx.status],
         });
       })
       .finally(() => setLoading(false));
@@ -55,7 +89,7 @@ export const useProfile = () => {
 };
 
 /* =======================
-   PRODUCTS HOOK
+   PRODUCTS HOOK (FIX REAL)
 ======================= */
 export const useProducts = (limit = 8) => {
   const [products, setProducts] = useState([]);
@@ -64,22 +98,32 @@ export const useProducts = (limit = 8) => {
   useEffect(() => {
     fetchCSV(PRODUCTS_SHEET_URL)
       .then((csv) => {
-        const rows = csv.trim().split("\n").slice(1);
+        const rows = csv.trim().split("\n");
+        const headers = parseCSVRow(rows[0]);
+
+        const idx = {
+          name: headers.indexOf("name"),
+          price: headers.indexOf("price"),
+          description: headers.indexOf("description"),
+          image: headers.indexOf("image"),
+          wa: headers.indexOf("wa"),
+        };
 
         const data = rows
+          .slice(1)
           .map((row) => {
-            const parts = row.split(",");
-            if (parts.length < 5) return null;
+            if (!row.trim()) return null;
+            const parts = parseCSVRow(row);
 
             return {
-              name: parts[0],
-              price: parts[1],
-              description: parts.slice(2, parts.length - 2).join(","),
-              image: convertDriveLink(parts[parts.length - 2]),
-              wa: parts[parts.length - 1],
+              name: parts[idx.name],
+              price: parts[idx.price],
+              description: parts[idx.description],
+              image: convertDriveLink(parts[idx.image]),
+              wa: parts[idx.wa],
             };
           })
-          .filter(Boolean);
+          .filter((p) => p && p.name);
 
         setProducts(limit ? data.slice(0, limit) : data);
       })
