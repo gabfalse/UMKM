@@ -7,7 +7,16 @@ export default function Home({ profile }) {
   return (
     <>
       {/* HERO / LANDING */}
-      <section className="bg-gradient-to-b from-bg to-white">
+      <section
+        className="bg-bg"
+        style={{
+          "--color-add": profile?.brandColor
+            ?.replace("#", "")
+            ?.match(/.{2}/g)
+            ?.map((x) => parseInt(x, 16))
+            ?.join(", "),
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 py-20 text-center">
           {profile?.logo && (
             <img
@@ -18,7 +27,7 @@ export default function Home({ profile }) {
               onError={(e) => {
                 e.currentTarget.src = "https://placehold.co/160x160?text=Logo";
               }}
-              className="h-24 w-24 rounded-full mx-auto mb-6 object-contain bg-white p-2 shadow-md"
+              className="h-24 w-24 rounded-full mx-auto mb-6 object-contain bg-bg p-2 shadow-sm"
             />
           )}
 
@@ -39,7 +48,7 @@ export default function Home({ profile }) {
                 href={`https://wa.me/${profile.phone}`}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-medium text-white shadow-sm transition bg-add"
+                className="inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-medium text-white shadow-sm transition bg-add hover:opacity-90"
               >
                 Hubungi via WhatsApp
               </a>
@@ -47,7 +56,7 @@ export default function Home({ profile }) {
 
             <Link
               to="/products"
-              className="inline-flex items-center justify-center rounded-full border px-8 py-3 text-sm font-medium transition border-sub text-main"
+              className="inline-flex items-center justify-center rounded-full border px-8 py-3 text-sm font-medium transition border-sub text-main hover:bg-main/5"
             >
               Lihat Semua Produk
             </Link>
@@ -64,7 +73,7 @@ export default function Home({ profile }) {
 
           <Link
             to="/products"
-            className="text-sm font-medium hover:underline text-add"
+            className="text-sm font-medium text-add hover:underline"
           >
             Lihat Semua →
           </Link>
@@ -79,10 +88,10 @@ export default function Home({ profile }) {
             {products.map((p, i) => (
               <div
                 key={i}
-                className="group bg-white rounded-2xl border overflow-hidden shadow-sm hover:shadow-md transition border-sub"
+                className="group bg-bg rounded-2xl border border-sub/20 overflow-hidden shadow-sm hover:shadow-md transition"
               >
                 {/* Image */}
-                <div className="relative aspect-square bg-gray-100 overflow-hidden">
+                <div className="relative aspect-square bg-bg overflow-hidden">
                   <img
                     src={p.image}
                     alt={p.name}
@@ -111,11 +120,11 @@ export default function Home({ profile }) {
                     {p.wa && (
                       <a
                         href={`https://wa.me/${p.wa}?text=${encodeURIComponent(
-                          `Halo saya mau pesan kerudung dengan code warna ${p.name} yanf harganya ${p.price}`,
+                          `Halo saya mau pesan kerudung dengan kode ${p.name} seharga Rp ${p.price}`,
                         )}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="rounded-full px-4 py-1.5 text-xs font-medium text-white transition bg-add"
+                        className="rounded-full px-4 py-1.5 text-xs font-medium text-white bg-add transition hover:opacity-90"
                       >
                         Pesan
                       </a>

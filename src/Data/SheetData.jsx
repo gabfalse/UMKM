@@ -73,6 +73,7 @@ export const useProfile = () => {
           phone: headers.indexOf("phone"),
           status: headers.indexOf("status"),
           brand_color: headers.indexOf("brand_color"),
+          about: headers.indexOf("about"), // ⬅️ NEW
         };
 
         setProfile({
@@ -84,7 +85,8 @@ export const useProfile = () => {
           brandColor:
             values[idx.brand_color] && values[idx.brand_color].startsWith("#")
               ? values[idx.brand_color]
-              : "#111827", // default aman
+              : "#111827",
+          about: values[idx.about] || "", // ⬅️ NEW
         });
       })
       .finally(() => setLoading(false));

@@ -4,8 +4,8 @@ import { useEffect } from "react";
 import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
 import Home from "./Pages/Home";
-import Profile from "./pages/Profile";
-import Maintenance from "./pages/Maintenance";
+import Profile from "./Pages/Profile";
+import Maintenance from "./Pages/Maintenance";
 import Product from "./Pages/Product";
 
 import { useProfile } from "./Data/SheetData";
